@@ -26,21 +26,52 @@
 
 ![](figures/example_risk_scale.png)
 
+## Risk events timeline
+- Kill switch triggers: **0** days
+- Scale clipped (raw_scale > max): **143** days
+
+### Kill switch days
+(none)
+
+### Clipped days
+| Date                |   vol_est_% |   scale | reason                                                                           |
+|:--------------------|------------:|--------:|:---------------------------------------------------------------------------------|
+| 2025-07-25 00:00:00 |        9.04 |       1 | VOL_TARGET: vol_est=9.04%, target=12.00% → raw_scale=1.33, scale=1.00 (CLIPPED)  |
+| 2025-07-28 00:00:00 |        9.02 |       1 | VOL_TARGET: vol_est=9.02%, target=12.00% → raw_scale=1.33, scale=1.00 (CLIPPED)  |
+| 2025-07-29 00:00:00 |        9.24 |       1 | VOL_TARGET: vol_est=9.24%, target=12.00% → raw_scale=1.30, scale=1.00 (CLIPPED)  |
+| 2025-07-30 00:00:00 |        8.57 |       1 | VOL_TARGET: vol_est=8.57%, target=12.00% → raw_scale=1.40, scale=1.00 (CLIPPED)  |
+| 2025-07-31 00:00:00 |        7.96 |       1 | VOL_TARGET: vol_est=7.96%, target=12.00% → raw_scale=1.51, scale=1.00 (CLIPPED)  |
+| 2025-08-01 00:00:00 |       10.4  |       1 | VOL_TARGET: vol_est=10.40%, target=12.00% → raw_scale=1.15, scale=1.00 (CLIPPED) |
+| 2025-09-30 00:00:00 |       11.68 |       1 | VOL_TARGET: vol_est=11.68%, target=12.00% → raw_scale=1.03, scale=1.00 (CLIPPED) |
+| 2025-10-01 00:00:00 |       10.51 |       1 | VOL_TARGET: vol_est=10.51%, target=12.00% → raw_scale=1.14, scale=1.00 (CLIPPED) |
+| 2025-10-02 00:00:00 |       10.33 |       1 | VOL_TARGET: vol_est=10.33%, target=12.00% → raw_scale=1.16, scale=1.00 (CLIPPED) |
+| 2025-10-03 00:00:00 |       10.34 |       1 | VOL_TARGET: vol_est=10.34%, target=12.00% → raw_scale=1.16, scale=1.00 (CLIPPED) |
+| 2025-10-06 00:00:00 |       10.32 |       1 | VOL_TARGET: vol_est=10.32%, target=12.00% → raw_scale=1.16, scale=1.00 (CLIPPED) |
+| 2025-10-07 00:00:00 |       10.39 |       1 | VOL_TARGET: vol_est=10.39%, target=12.00% → raw_scale=1.15, scale=1.00 (CLIPPED) |
+| 2025-10-08 00:00:00 |        9.71 |       1 | VOL_TARGET: vol_est=9.71%, target=12.00% → raw_scale=1.24, scale=1.00 (CLIPPED)  |
+| 2025-10-09 00:00:00 |        9.72 |       1 | VOL_TARGET: vol_est=9.72%, target=12.00% → raw_scale=1.24, scale=1.00 (CLIPPED)  |
+| 2025-12-22 00:00:00 |       11.33 |       1 | VOL_TARGET: vol_est=11.33%, target=12.00% → raw_scale=1.06, scale=1.00 (CLIPPED) |
+| 2025-12-23 00:00:00 |       10.53 |       1 | VOL_TARGET: vol_est=10.53%, target=12.00% → raw_scale=1.14, scale=1.00 (CLIPPED) |
+| 2025-12-24 00:00:00 |       10.47 |       1 | VOL_TARGET: vol_est=10.47%, target=12.00% → raw_scale=1.15, scale=1.00 (CLIPPED) |
+| 2025-12-26 00:00:00 |       10.48 |       1 | VOL_TARGET: vol_est=10.48%, target=12.00% → raw_scale=1.15, scale=1.00 (CLIPPED) |
+| 2025-12-29 00:00:00 |       10.57 |       1 | VOL_TARGET: vol_est=10.57%, target=12.00% → raw_scale=1.14, scale=1.00 (CLIPPED) |
+| 2025-12-30 00:00:00 |       10.43 |       1 | VOL_TARGET: vol_est=10.43%, target=12.00% → raw_scale=1.15, scale=1.00 (CLIPPED) |
+
 ## Risk audit (last 10 days)
 - `vol_est_ann` and `drawdown` are shown in **%**.
 
-| Date       |    scale |   vol_est_ann |   drawdown | killed   | reason                                                                           |
-|:-----------|---------:|--------------:|-----------:|:---------|:---------------------------------------------------------------------------------|
-| 2025-12-16 | 0.76459  |         15.69 |      -2.95 | False    | VOL_TARGET: vol_est=15.69%, target=12.00% → raw_scale=0.76, scale=0.76           |
-| 2025-12-17 | 0.769548 |         15.59 |      -3.93 | False    | VOL_TARGET: vol_est=15.59%, target=12.00% → raw_scale=0.77, scale=0.77           |
-| 2025-12-18 | 0.81173  |         14.78 |      -3.36 | False    | VOL_TARGET: vol_est=14.78%, target=12.00% → raw_scale=0.81, scale=0.81           |
-| 2025-12-19 | 0.920093 |         13.04 |      -2.64 | False    | VOL_TARGET: vol_est=13.04%, target=12.00% → raw_scale=0.92, scale=0.92           |
-| 2025-12-22 | 1        |         11.33 |      -2.39 | False    | VOL_TARGET: vol_est=11.33%, target=12.00% → raw_scale=1.06, scale=1.00 (clipped) |
-| 2025-12-23 | 1        |         10.53 |      -1.33 | False    | VOL_TARGET: vol_est=10.53%, target=12.00% → raw_scale=1.14, scale=1.00 (clipped) |
-| 2025-12-24 | 1        |         10.47 |      -1.19 | False    | VOL_TARGET: vol_est=10.47%, target=12.00% → raw_scale=1.15, scale=1.00 (clipped) |
-| 2025-12-26 | 1        |         10.48 |      -0.96 | False    | VOL_TARGET: vol_est=10.48%, target=12.00% → raw_scale=1.15, scale=1.00 (clipped) |
-| 2025-12-29 | 1        |         10.57 |      -1.5  | False    | VOL_TARGET: vol_est=10.57%, target=12.00% → raw_scale=1.14, scale=1.00 (clipped) |
-| 2025-12-30 | 1        |         10.43 |      -1.73 | False    | VOL_TARGET: vol_est=10.43%, target=12.00% → raw_scale=1.15, scale=1.00 (clipped) |
+| Date       |    scale |   vol_est_ann |   drawdown | killed   | clipped   | reason                                                                           |
+|:-----------|---------:|--------------:|-----------:|:---------|:----------|:---------------------------------------------------------------------------------|
+| 2025-12-16 | 0.76459  |         15.69 |      -2.95 | False    | False     | VOL_TARGET: vol_est=15.69%, target=12.00% → raw_scale=0.76, scale=0.76           |
+| 2025-12-17 | 0.769548 |         15.59 |      -3.93 | False    | False     | VOL_TARGET: vol_est=15.59%, target=12.00% → raw_scale=0.77, scale=0.77           |
+| 2025-12-18 | 0.81173  |         14.78 |      -3.36 | False    | False     | VOL_TARGET: vol_est=14.78%, target=12.00% → raw_scale=0.81, scale=0.81           |
+| 2025-12-19 | 0.920093 |         13.04 |      -2.64 | False    | False     | VOL_TARGET: vol_est=13.04%, target=12.00% → raw_scale=0.92, scale=0.92           |
+| 2025-12-22 | 1        |         11.33 |      -2.39 | False    | True      | VOL_TARGET: vol_est=11.33%, target=12.00% → raw_scale=1.06, scale=1.00 (CLIPPED) |
+| 2025-12-23 | 1        |         10.53 |      -1.33 | False    | True      | VOL_TARGET: vol_est=10.53%, target=12.00% → raw_scale=1.14, scale=1.00 (CLIPPED) |
+| 2025-12-24 | 1        |         10.47 |      -1.19 | False    | True      | VOL_TARGET: vol_est=10.47%, target=12.00% → raw_scale=1.15, scale=1.00 (CLIPPED) |
+| 2025-12-26 | 1        |         10.48 |      -0.96 | False    | True      | VOL_TARGET: vol_est=10.48%, target=12.00% → raw_scale=1.15, scale=1.00 (CLIPPED) |
+| 2025-12-29 | 1        |         10.57 |      -1.5  | False    | True      | VOL_TARGET: vol_est=10.57%, target=12.00% → raw_scale=1.14, scale=1.00 (CLIPPED) |
+| 2025-12-30 | 1        |         10.43 |      -1.73 | False    | True      | VOL_TARGET: vol_est=10.43%, target=12.00% → raw_scale=1.15, scale=1.00 (CLIPPED) |
 
 ## Latest holdings (top 10 weights)
 | Ticker   |   weight |

@@ -120,7 +120,7 @@ def write_basic_report(results: dict, out_dir: Path, name: str) -> None:
         killed_days = int(risk_audit.get("killed", pd.Series(False, index=risk_audit.index)).sum())
         risk_summary = f"- Last scale: **{last_scale:.2f}**\n- Days killed (scale=0 due to DD): **{killed_days}**"
 
-        cols = [c for c in ["scale", "vol_est_ann", "drawdown", "killed", "reason"] if c in risk_audit.columns]
+        cols = [c for c in ["scale", "vol_est_ann", "drawdown", "killed", "clipped", "reason"] if c in risk_audit.columns]
         tail = risk_audit[cols].tail(10).copy()
         tail.index = tail.index.strftime("%Y-%m-%d")
         if "vol_est_ann" in tail.columns:
@@ -168,6 +168,14 @@ def write_basic_report(results: dict, out_dir: Path, name: str) -> None:
 {risk_summary}
 
 {f"![]({scale_path.relative_to(out_dir)})" if scale_path is not None else ''}
+
+## Risk events timeline
+- Kill switch triggers: **{int(risk_audit["killed"].sum()) if risk_audit is not None and "killed" in risk_audit.columns else 0}** days
+- Scale clipped (raw_scale > max): **{int(risk_audit["clipped"].sum()) if risk_audit is not None and "clipped" in risk_audit.columns else 0}** days
+
+{("### Kill switch days\n" + risk_audit.loc[risk_audit["killed"], ["drawdown", "reason"]].tail(20).assign(drawdown=lambda d: (d["drawdown"]*100).round(2)).rename(columns={"drawdown":"drawdown_%"}).to_markdown()) if risk_audit is not None and "killed" in risk_audit.columns and risk_audit["killed"].any() else "### Kill switch days\n(none)"}
+
+{("### Clipped days\n" + risk_audit.loc[risk_audit.get("clipped", False), ["vol_est_ann", "scale", "reason"]].tail(20).assign(vol_est_ann=lambda d: (d["vol_est_ann"]*100).round(2)).rename(columns={"vol_est_ann":"vol_est_%"}).to_markdown()) if risk_audit is not None and "clipped" in risk_audit.columns and risk_audit["clipped"].any() else "### Clipped days\n(none)"}
 
 ## Risk audit (last 10 days)
 - `vol_est_ann` and `drawdown` are shown in **%**.

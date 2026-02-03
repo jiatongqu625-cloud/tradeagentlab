@@ -68,20 +68,26 @@ def apply_risk(
 
     # Human-readable audit reasons (for reports)
     reason = pd.Series("", index=scale.index, dtype=object)
+    clipped_flag = pd.Series(False, index=scale.index)
+
     for t in scale.index:
         if killed.loc[t]:
             reason.loc[t] = (
                 f"KILL_SWITCH: dd={dd.loc[t]:.2%} <= -{cfg.dd_kill:.0%} → scale=0"
             )
+            clipped_flag.loc[t] = False
         elif np.isnan(vol_est.loc[t]):
             reason.loc[t] = f"WARMUP: need {cfg.vol_lookback}d for vol_est → scale=0"
+            clipped_flag.loc[t] = False
         else:
             rs = float(raw_scale.loc[t])
             s2 = float(scale2.loc[t])
-            clipped = " (clipped)" if abs(rs - s2) > 1e-9 else ""
+            clipped = abs(rs - s2) > 1e-9
+            clipped_flag.loc[t] = clipped
+            clip_note = " (CLIPPED)" if clipped else ""
             reason.loc[t] = (
                 f"VOL_TARGET: vol_est={vol_est.loc[t]:.2%}, target={cfg.target_vol_ann:.2%} → "
-                f"raw_scale={rs:.2f}, scale={s2:.2f}{clipped}"
+                f"raw_scale={rs:.2f}, scale={s2:.2f}{clip_note}"
             )
 
     # Scaled weights and costs
@@ -97,6 +103,7 @@ def apply_risk(
             "vol_est_ann": vol_est,
             "drawdown": dd,
             "killed": killed,
+            "clipped": clipped_flag,
             "reason": reason,
             "turnover": turnover,
             "cost": cost,
