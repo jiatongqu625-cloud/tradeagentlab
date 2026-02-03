@@ -1,0 +1,2 @@
+[console_scripts]
+tal = tradeagentlab.cli:main

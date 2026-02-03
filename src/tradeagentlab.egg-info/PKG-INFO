@@ -1,0 +1,58 @@
+Metadata-Version: 2.4
+Name: tradeagentlab
+Version: 0.1.0
+Summary: Agent+ML US equities research/backtest/paper-trading lab
+Author: Jiating
+License: MIT
+Requires-Python: >=3.11
+Description-Content-Type: text/markdown
+Requires-Dist: pandas>=2.2
+Requires-Dist: numpy>=2.0
+Requires-Dist: yfinance>=0.2.54
+Requires-Dist: pyarrow>=15.0
+Requires-Dist: pydantic>=2.6
+Requires-Dist: pydantic-settings>=2.2
+Requires-Dist: scikit-learn>=1.4
+Requires-Dist: plotly>=5.20
+Requires-Dist: kaleido>=0.2.1
+Requires-Dist: rich>=13.7
+Provides-Extra: dev
+Requires-Dist: pytest>=8.0; extra == "dev"
+Requires-Dist: ruff>=0.4.0; extra == "dev"
+Requires-Dist: mypy>=1.8; extra == "dev"
+Requires-Dist: pre-commit>=3.6; extra == "dev"
+Provides-Extra: llm
+Requires-Dist: openai>=1.40.0; extra == "llm"
+
+# TradeAgentLab
+
+A **CPU-only** US equities lab that goes from **data → features → ML signals → (LLM) agent research/decision → risk gates → backtest → reports → paper-trading simulation**.
+
+> Not financial advice. Research project.
+
+## Why this repo looks “senior”
+- Reproducible pipelines (cached market data, configs)
+- Walk-forward evaluation + transaction costs
+- Explicit risk engine (position limits, vol targeting, kill switch)
+- Agent outputs are **structured** and **auditable** (JSON), then constrained by hard risk rules
+- One-command backtests + auto-generated markdown reports with charts
+
+## Quickstart
+```bash
+cd tradeagentlab
+python -m venv .venv && source .venv/bin/activate
+pip install -U pip
+pip install -e ".[dev]"
+
+# Run a tiny backtest example (will download & cache data)
+tal backtest --config configs/backtest.example.yaml
+```
+
+## Repo layout
+- `src/tradeagentlab/` — library code
+- `configs/` — universe + backtest configs
+- `docs/` — generated reports/figures
+
+## Roadmap (14 days)
+See `docs/ROADMAP.md`.
+
