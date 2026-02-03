@@ -2,7 +2,7 @@
 __pycache__/
 *.pyc
 .cache/
-docs/figures/*.png
+# docs/figures contains generated report images; keep them tracked for GitHub readability.
 .DS_Store
 .pytest_cache/
 .mypy_cache/
