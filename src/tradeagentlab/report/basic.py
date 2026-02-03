@@ -71,6 +71,7 @@ def write_basic_report(results: dict, out_dir: Path, name: str) -> None:
     rets: pd.Series = results["portfolio_returns"]
     bench_rets: pd.Series | None = results.get("benchmark_returns")
     weights: pd.DataFrame = results["weights"]
+    proposed_weights: pd.DataFrame | None = results.get("proposed_weights")
     turnover: pd.Series = results["turnover"]
     cost: pd.Series = results["cost"]
     risk_audit: pd.DataFrame | None = results.get("risk_audit")
@@ -181,18 +182,34 @@ def write_basic_report(results: dict, out_dir: Path, name: str) -> None:
     if agent is not None:
         research = agent.get("research")
         decision = agent.get("decision")
+        execution = agent.get("execution")
         paths = agent.get("paths", {})
         decision_json = paths.get("decision", "docs/agent/latest_decision.json")
+        execution_json = paths.get("execution", "docs/agent/latest_execution.json")
 
-        # Build a compact table
+        # Build compact tables
         if decision is not None and hasattr(decision, "proposed_positions"):
             pos = [(p.ticker, p.weight, p.reason) for p in decision.proposed_positions]
-            dfp = pd.DataFrame(pos, columns=["ticker", "weight", "reason"]).sort_values("weight", ascending=False)
+            dfp = pd.DataFrame(pos, columns=["ticker", "proposed", "reason"]).sort_values("proposed", ascending=False)
+
+            exec_md = "(no execution plan)"
+            if execution is not None and hasattr(execution, "rows"):
+                rows = [(r.ticker, r.proposed_weight, r.executed_weight, r.status) for r in execution.rows]
+                dfx = pd.DataFrame(rows, columns=["ticker", "proposed", "executed", "status"]).sort_values(
+                    "proposed", ascending=False
+                )
+                dfx["delta"] = (dfx["executed"] - dfx["proposed"]).round(4)
+                exec_md = dfx.to_markdown(index=False)
+
+            gate_reason = getattr(execution, "gate_reason", "") if execution is not None else ""
             agent_md = (
                 f"**As of:** `{decision.as_of}`\n\n"
                 f"**Regime:** `{research.regime.label}` (conf={research.regime.confidence:.2f})\n\n"
-                f"**Decision JSON:** `{Path(decision_json).as_posix()}`\n\n"
-                + dfp.to_markdown(index=False)
+                f"**Decision JSON:** `{Path(decision_json).as_posix()}`\n"
+                f"**Execution JSON:** `{Path(execution_json).as_posix()}`\n\n"
+                f"### Proposed positions\n{dfp.to_markdown(index=False)}\n\n"
+                f"### Risk-gated execution\n{exec_md}\n\n"
+                f"**Gate reason (as_of):** {gate_reason}\n"
             )
 
     md = f"""# TradeAgentLab Report: {name}

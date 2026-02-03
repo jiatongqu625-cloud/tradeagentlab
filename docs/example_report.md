@@ -103,13 +103,26 @@
 **Regime:** `risk-on` (conf=0.65)
 
 **Decision JSON:** `docs/agent/example_decision.json`
+**Execution JSON:** `docs/agent/example_execution.json`
 
-| ticker   |   weight | reason                                    |
-|:---------|---------:|:------------------------------------------|
-| MSFT     |     0.25 | 20D ret=0.15%, trend=flat, vol20D=17.22%. |
-| NVDA     |     0.25 | 20D ret=4.24%, trend=up, vol20D=29.87%.   |
-| QQQ      |     0.25 | 20D ret=0.50%, trend=flat, vol20D=12.88%. |
-| SPY      |     0.25 | 20D ret=1.29%, trend=up, vol20D=8.26%.    |
+### Proposed positions
+| ticker   |   proposed | reason                                    |
+|:---------|-----------:|:------------------------------------------|
+| MSFT     |       0.25 | 20D ret=0.15%, trend=flat, vol20D=17.22%. |
+| NVDA     |       0.25 | 20D ret=4.24%, trend=up, vol20D=29.87%.   |
+| QQQ      |       0.25 | 20D ret=0.50%, trend=flat, vol20D=12.88%. |
+| SPY      |       0.25 | 20D ret=1.29%, trend=up, vol20D=8.26%.    |
+
+### Risk-gated execution
+| ticker   |   proposed |   executed | status   |   delta |
+|:---------|-----------:|-----------:|:---------|--------:|
+| MSFT     |       0.25 |       0.25 | accepted |       0 |
+| NVDA     |       0.25 |       0.25 | accepted |       0 |
+| QQQ      |       0.25 |       0.25 | accepted |       0 |
+| SPY      |       0.25 |       0.25 | accepted |       0 |
+
+**Gate reason (as_of):** VOL_TARGET: vol_est=10.43%, target=12.00% → raw_scale=1.15, scale=1.00 (CLIPPED)
+
 
 ## Notes
 - Costs are modeled as: `turnover * transaction_cost_bps` (simplified).

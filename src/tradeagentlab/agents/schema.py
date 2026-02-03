@@ -38,3 +38,18 @@ class AgentDecision(BaseModel):
     risk_notes: list[str] = Field(default_factory=list)
     constraints: dict[str, float] = Field(default_factory=dict)
     disclaimer: str = "Not financial advice. Research project." 
+
+
+class ExecutionRow(BaseModel):
+    ticker: str
+    proposed_weight: float
+    executed_weight: float
+    status: Literal["accepted", "rejected"]
+    gate_reason: str
+
+
+class ExecutionPlan(BaseModel):
+    as_of: str
+    scale: float
+    gate_reason: str
+    rows: list[ExecutionRow]

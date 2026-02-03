@@ -85,21 +85,28 @@ def run_backtest(config_path: Path) -> None:
         cfg=cfg.risk,
     )
 
-    w2 = risk_out["weights"]
+    w_exec = risk_out["weights"]
     port_ret = risk_out["portfolio_returns"]
     audit = risk_out["audit"]
 
     equity = (1.0 + port_ret).cumprod() * cfg.initial_cash
     bench_equity = (1.0 + bench_ret).cumprod() * cfg.initial_cash
 
-    # Agent artifacts (structured, auditable)
-    agent_out = run_agent_decision(prices=prices, weights=w2, out_dir=Path(cfg.report_out_dir), name=cfg.report_name)
+    # Agent artifacts (structured, auditable): propose BEFORE risk; execute AFTER risk.
+    agent_out = run_agent_decision(
+        prices=prices,
+        proposed_weights=w,
+        risk_audit=audit,
+        out_dir=Path(cfg.report_out_dir),
+        name=cfg.report_name,
+    )
 
     results = {
         "config": cfg,
         "prices": prices,
         "benchmark": bench,
-        "weights": w2,
+        "weights": w_exec,
+        "proposed_weights": w,
         "portfolio_returns": port_ret,
         "benchmark_returns": bench_ret,
         "equity": equity,
