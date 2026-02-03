@@ -108,6 +108,7 @@ def write_basic_report(results: dict, out_dir: Path, name: str) -> None:
     # 4) Risk exposure (scale)
     scale_path = None
     risk_summary = "(risk audit not available)"
+    audit_md = "(no audit)"
     if risk_audit is not None and "scale" in risk_audit.columns:
         fig_s = go.Figure()
         fig_s.add_trace(go.Scatter(x=risk_audit.index, y=risk_audit["scale"].values, name="Exposure scale"))
@@ -118,6 +119,15 @@ def write_basic_report(results: dict, out_dir: Path, name: str) -> None:
         last_scale = float(risk_audit["scale"].iloc[-1])
         killed_days = int(risk_audit.get("killed", pd.Series(False, index=risk_audit.index)).sum())
         risk_summary = f"- Last scale: **{last_scale:.2f}**\n- Days killed (scale=0 due to DD): **{killed_days}**"
+
+        cols = [c for c in ["scale", "vol_est_ann", "drawdown", "killed", "reason"] if c in risk_audit.columns]
+        tail = risk_audit[cols].tail(10).copy()
+        tail.index = tail.index.strftime("%Y-%m-%d")
+        if "vol_est_ann" in tail.columns:
+            tail["vol_est_ann"] = (tail["vol_est_ann"] * 100).round(2)
+        if "drawdown" in tail.columns:
+            tail["drawdown"] = (tail["drawdown"] * 100).round(2)
+        audit_md = tail.to_markdown()
 
     # 5) Latest holdings
     latest_w = weights.iloc[-1].sort_values(ascending=False)
@@ -158,6 +168,11 @@ def write_basic_report(results: dict, out_dir: Path, name: str) -> None:
 {risk_summary}
 
 {f"![]({scale_path.relative_to(out_dir)})" if scale_path is not None else ''}
+
+## Risk audit (last 10 days)
+- `vol_est_ann` and `drawdown` are shown in **%**.
+
+{audit_md}
 
 ## Latest holdings (top 10 weights)
 {top.to_frame('weight').to_markdown() if len(top) else '(no positions)'}

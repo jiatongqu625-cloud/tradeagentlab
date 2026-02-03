@@ -26,6 +26,22 @@
 
 ![](figures/example_risk_scale.png)
 
+## Risk audit (last 10 days)
+- `vol_est_ann` and `drawdown` are shown in **%**.
+
+| Date       |    scale |   vol_est_ann |   drawdown | killed   | reason                                                                           |
+|:-----------|---------:|--------------:|-----------:|:---------|:---------------------------------------------------------------------------------|
+| 2025-12-16 | 0.76459  |         15.69 |      -2.95 | False    | VOL_TARGET: vol_est=15.69%, target=12.00% → raw_scale=0.76, scale=0.76           |
+| 2025-12-17 | 0.769548 |         15.59 |      -3.93 | False    | VOL_TARGET: vol_est=15.59%, target=12.00% → raw_scale=0.77, scale=0.77           |
+| 2025-12-18 | 0.81173  |         14.78 |      -3.36 | False    | VOL_TARGET: vol_est=14.78%, target=12.00% → raw_scale=0.81, scale=0.81           |
+| 2025-12-19 | 0.920093 |         13.04 |      -2.64 | False    | VOL_TARGET: vol_est=13.04%, target=12.00% → raw_scale=0.92, scale=0.92           |
+| 2025-12-22 | 1        |         11.33 |      -2.39 | False    | VOL_TARGET: vol_est=11.33%, target=12.00% → raw_scale=1.06, scale=1.00 (clipped) |
+| 2025-12-23 | 1        |         10.53 |      -1.33 | False    | VOL_TARGET: vol_est=10.53%, target=12.00% → raw_scale=1.14, scale=1.00 (clipped) |
+| 2025-12-24 | 1        |         10.47 |      -1.19 | False    | VOL_TARGET: vol_est=10.47%, target=12.00% → raw_scale=1.15, scale=1.00 (clipped) |
+| 2025-12-26 | 1        |         10.48 |      -0.96 | False    | VOL_TARGET: vol_est=10.48%, target=12.00% → raw_scale=1.15, scale=1.00 (clipped) |
+| 2025-12-29 | 1        |         10.57 |      -1.5  | False    | VOL_TARGET: vol_est=10.57%, target=12.00% → raw_scale=1.14, scale=1.00 (clipped) |
+| 2025-12-30 | 1        |         10.43 |      -1.73 | False    | VOL_TARGET: vol_est=10.43%, target=12.00% → raw_scale=1.15, scale=1.00 (clipped) |
+
 ## Latest holdings (top 10 weights)
 | Ticker   |   weight |
 |:---------|---------:|

@@ -40,7 +40,8 @@ def apply_risk(
     vol_est = roll.std(ddof=0) * np.sqrt(252)
 
     # Exposure scaling: target_vol / vol_est, clipped
-    scale = (cfg.target_vol_ann / vol_est).clip(lower=0.0, upper=cfg.max_leverage)
+    raw_scale = cfg.target_vol_ann / vol_est
+    scale = raw_scale.clip(lower=0.0, upper=cfg.max_leverage)
     scale = scale.fillna(0.0)
 
     # Apply drawdown kill switch on the scaled (pre-cost) equity
@@ -65,6 +66,24 @@ def apply_risk(
 
     scale2 = scale.mask(killed, 0.0)
 
+    # Human-readable audit reasons (for reports)
+    reason = pd.Series("", index=scale.index, dtype=object)
+    for t in scale.index:
+        if killed.loc[t]:
+            reason.loc[t] = (
+                f"KILL_SWITCH: dd={dd.loc[t]:.2%} <= -{cfg.dd_kill:.0%} → scale=0"
+            )
+        elif np.isnan(vol_est.loc[t]):
+            reason.loc[t] = f"WARMUP: need {cfg.vol_lookback}d for vol_est → scale=0"
+        else:
+            rs = float(raw_scale.loc[t])
+            s2 = float(scale2.loc[t])
+            clipped = " (clipped)" if abs(rs - s2) > 1e-9 else ""
+            reason.loc[t] = (
+                f"VOL_TARGET: vol_est={vol_est.loc[t]:.2%}, target={cfg.target_vol_ann:.2%} → "
+                f"raw_scale={rs:.2f}, scale={s2:.2f}{clipped}"
+            )
+
     # Scaled weights and costs
     w_scaled = base_weights.mul(scale2, axis=0)
     turnover = w_scaled.diff().abs().sum(axis=1).fillna(0.0)
@@ -78,6 +97,7 @@ def apply_risk(
             "vol_est_ann": vol_est,
             "drawdown": dd,
             "killed": killed,
+            "reason": reason,
             "turnover": turnover,
             "cost": cost,
         },
