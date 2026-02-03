@@ -73,6 +73,7 @@ def write_basic_report(results: dict, out_dir: Path, name: str) -> None:
     weights: pd.DataFrame = results["weights"]
     turnover: pd.Series = results["turnover"]
     cost: pd.Series = results["cost"]
+    risk_audit: pd.DataFrame | None = results.get("risk_audit")
 
     stats = _perf_stats(rets)
     bench_stats = _perf_stats(bench_rets) if bench_rets is not None else None
@@ -104,7 +105,21 @@ def write_basic_report(results: dict, out_dir: Path, name: str) -> None:
     tc_path = fig_dir / f"{name}_turnover_cost.png"
     fig_tc.write_image(tc_path, scale=2)
 
-    # 4) Latest holdings
+    # 4) Risk exposure (scale)
+    scale_path = None
+    risk_summary = "(risk audit not available)"
+    if risk_audit is not None and "scale" in risk_audit.columns:
+        fig_s = go.Figure()
+        fig_s.add_trace(go.Scatter(x=risk_audit.index, y=risk_audit["scale"].values, name="Exposure scale"))
+        fig_s.update_layout(title="Risk overlay: exposure scaling", xaxis_title="Date", yaxis_title="Scale")
+        scale_path = fig_dir / f"{name}_risk_scale.png"
+        fig_s.write_image(scale_path, scale=2)
+
+        last_scale = float(risk_audit["scale"].iloc[-1])
+        killed_days = int(risk_audit.get("killed", pd.Series(False, index=risk_audit.index)).sum())
+        risk_summary = f"- Last scale: **{last_scale:.2f}**\n- Days killed (scale=0 due to DD): **{killed_days}**"
+
+    # 5) Latest holdings
     latest_w = weights.iloc[-1].sort_values(ascending=False)
     top = latest_w[latest_w > 0].head(10)
 
@@ -138,6 +153,11 @@ def write_basic_report(results: dict, out_dir: Path, name: str) -> None:
 
 ## Turnover & transaction costs
 ![]({tc_path.relative_to(out_dir)})
+
+## Risk overlay (exposure scale)
+{risk_summary}
+
+{f"![]({scale_path.relative_to(out_dir)})" if scale_path is not None else ''}
 
 ## Latest holdings (top 10 weights)
 {top.to_frame('weight').to_markdown() if len(top) else '(no positions)'}

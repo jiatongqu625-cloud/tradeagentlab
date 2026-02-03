@@ -14,6 +14,12 @@ portfolio:
   max_position_weight: 0.25
   transaction_cost_bps: 2.0
 
+risk:
+  target_vol_ann: 0.12
+  vol_lookback: 20
+  dd_kill: 0.35
+  max_leverage: 1.0
+
 report:
   out_dir: "docs"
   name: "example"

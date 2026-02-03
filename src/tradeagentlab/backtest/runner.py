@@ -9,6 +9,7 @@ import yaml
 from tradeagentlab.data.yf import load_prices
 from tradeagentlab.features.tech import compute_momentum_signal
 from tradeagentlab.report.basic import write_basic_report
+from tradeagentlab.risk.engine import RiskConfig, apply_risk
 
 
 @dataclass
@@ -20,6 +21,7 @@ class BacktestConfig:
     initial_cash: float
     max_position_weight: float
     transaction_cost_bps: float
+    risk: RiskConfig
     report_out_dir: str
     report_name: str
 
@@ -29,7 +31,16 @@ def _read_config(path: Path) -> BacktestConfig:
     u = obj["universe"]
     s = obj["strategy"]
     p = obj["portfolio"]
+    rk = obj.get("risk", {})
     r = obj.get("report", {})
+
+    risk = RiskConfig(
+        target_vol_ann=float(rk.get("target_vol_ann", 0.12)),
+        vol_lookback=int(rk.get("vol_lookback", 20)),
+        max_leverage=float(rk.get("max_leverage", 1.0)),
+        dd_kill=float(rk.get("dd_kill", 0.20)),
+        dd_recover=(float(rk["dd_recover"]) if "dd_recover" in rk and rk["dd_recover"] is not None else None),
+    )
 
     return BacktestConfig(
         tickers=list(u["tickers"]),
@@ -39,6 +50,7 @@ def _read_config(path: Path) -> BacktestConfig:
         initial_cash=float(p["initial_cash"]),
         max_position_weight=float(p["max_position_weight"]),
         transaction_cost_bps=float(p.get("transaction_cost_bps", 0.0)),
+        risk=risk,
         report_out_dir=str(r.get("out_dir", "docs")),
         report_name=str(r.get("name", "run")),
     )
@@ -64,11 +76,18 @@ def run_backtest(config_path: Path) -> None:
     w = w.clip(upper=cfg.max_position_weight)
     w = w.div(w.sum(axis=1).replace(0, pd.NA), axis=0).fillna(0.0)
 
-    # turnover & transaction costs
-    turnover = w.diff().abs().sum(axis=1).fillna(0.0)
-    cost = turnover * (cfg.transaction_cost_bps / 1e4)
+    # Risk overlays (vol targeting + drawdown kill) and transaction costs
+    risk_out = apply_risk(
+        base_weights=w,
+        asset_returns=rets,
+        transaction_cost_bps=cfg.transaction_cost_bps,
+        cfg=cfg.risk,
+    )
 
-    port_ret = (w.shift(1).fillna(0.0) * rets).sum(axis=1) - cost
+    w2 = risk_out["weights"]
+    port_ret = risk_out["portfolio_returns"]
+    audit = risk_out["audit"]
+
     equity = (1.0 + port_ret).cumprod() * cfg.initial_cash
     bench_equity = (1.0 + bench_ret).cumprod() * cfg.initial_cash
 
@@ -76,13 +95,14 @@ def run_backtest(config_path: Path) -> None:
         "config": cfg,
         "prices": prices,
         "benchmark": bench,
-        "weights": w,
+        "weights": w2,
         "portfolio_returns": port_ret,
         "benchmark_returns": bench_ret,
         "equity": equity,
         "benchmark_equity": bench_equity,
-        "turnover": turnover,
-        "cost": cost,
+        "turnover": audit["turnover"],
+        "cost": audit["cost"],
+        "risk_audit": audit,
     }
 
     write_basic_report(results, out_dir=Path(cfg.report_out_dir), name=cfg.report_name)
