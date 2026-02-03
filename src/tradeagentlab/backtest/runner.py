@@ -8,6 +8,7 @@ import yaml
 
 from tradeagentlab.data.yf import load_prices
 from tradeagentlab.features.tech import compute_momentum_signal
+from tradeagentlab.agents.orchestrator import run_agent_decision
 from tradeagentlab.report.basic import write_basic_report
 from tradeagentlab.risk.engine import RiskConfig, apply_risk
 
@@ -91,6 +92,9 @@ def run_backtest(config_path: Path) -> None:
     equity = (1.0 + port_ret).cumprod() * cfg.initial_cash
     bench_equity = (1.0 + bench_ret).cumprod() * cfg.initial_cash
 
+    # Agent artifacts (structured, auditable)
+    agent_out = run_agent_decision(prices=prices, weights=w2, out_dir=Path(cfg.report_out_dir), name=cfg.report_name)
+
     results = {
         "config": cfg,
         "prices": prices,
@@ -103,6 +107,7 @@ def run_backtest(config_path: Path) -> None:
         "turnover": audit["turnover"],
         "cost": audit["cost"],
         "risk_audit": audit,
+        "agent": agent_out,
     }
 
     write_basic_report(results, out_dir=Path(cfg.report_out_dir), name=cfg.report_name)

@@ -74,6 +74,7 @@ def write_basic_report(results: dict, out_dir: Path, name: str) -> None:
     turnover: pd.Series = results["turnover"]
     cost: pd.Series = results["cost"]
     risk_audit: pd.DataFrame | None = results.get("risk_audit")
+    agent: dict | None = results.get("agent")
 
     stats = _perf_stats(rets)
     bench_stats = _perf_stats(bench_rets) if bench_rets is not None else None
@@ -175,6 +176,25 @@ def write_basic_report(results: dict, out_dir: Path, name: str) -> None:
             f"MDD: **{bench_stats['mdd']:.2%}**\n"
         )
 
+    # Agent summary for the report
+    agent_md = "(agent not run)"
+    if agent is not None:
+        research = agent.get("research")
+        decision = agent.get("decision")
+        paths = agent.get("paths", {})
+        decision_json = paths.get("decision", "docs/agent/latest_decision.json")
+
+        # Build a compact table
+        if decision is not None and hasattr(decision, "proposed_positions"):
+            pos = [(p.ticker, p.weight, p.reason) for p in decision.proposed_positions]
+            dfp = pd.DataFrame(pos, columns=["ticker", "weight", "reason"]).sort_values("weight", ascending=False)
+            agent_md = (
+                f"**As of:** `{decision.as_of}`\n\n"
+                f"**Regime:** `{research.regime.label}` (conf={research.regime.confidence:.2f})\n\n"
+                f"**Decision JSON:** `{Path(decision_json).as_posix()}`\n\n"
+                + dfp.to_markdown(index=False)
+            )
+
     md = f"""# TradeAgentLab Report: {name}
 
 ## Summary (strategy)
@@ -224,6 +244,9 @@ def write_basic_report(results: dict, out_dir: Path, name: str) -> None:
 
 ## Monthly returns (%)
 {mtab_md}
+
+## Agent decision (structured & auditable)
+{agent_md}
 
 ## Notes
 - Costs are modeled as: `turnover * transaction_cost_bps` (simplified).

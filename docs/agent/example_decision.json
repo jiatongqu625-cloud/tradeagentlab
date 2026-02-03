@@ -1,0 +1,34 @@
+{
+  "as_of": "2025-12-30",
+  "objective": "Long-only US equities; risk constrained; research backtest/paper trading",
+  "proposed_positions": [
+    {
+      "ticker": "MSFT",
+      "weight": 0.25,
+      "reason": "20D ret=0.15%, trend=flat, vol20D=17.22%."
+    },
+    {
+      "ticker": "NVDA",
+      "weight": 0.25,
+      "reason": "20D ret=4.24%, trend=up, vol20D=29.87%."
+    },
+    {
+      "ticker": "QQQ",
+      "weight": 0.25,
+      "reason": "20D ret=0.50%, trend=flat, vol20D=12.88%."
+    },
+    {
+      "ticker": "SPY",
+      "weight": 0.25,
+      "reason": "20D ret=1.29%, trend=up, vol20D=8.26%."
+    }
+  ],
+  "risk_notes": [
+    "Regime: risk-on (conf=0.65)",
+    "Final execution must pass hard risk gates (vol targeting, drawdown kill switch, position limits)."
+  ],
+  "constraints": {
+    "max_positions": 10.0
+  },
+  "disclaimer": "Not financial advice. Research project."
+}
