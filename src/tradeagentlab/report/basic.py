@@ -202,6 +202,15 @@ def write_basic_report(results: dict, out_dir: Path, name: str) -> None:
                 exec_md = dfx.to_markdown(index=False)
 
             gate_reason = getattr(execution, "gate_reason", "") if execution is not None else ""
+
+            # Per-ticker gate reasons (trim to keep report readable)
+            reasons_md = "(no per-ticker reasons)"
+            if execution is not None and hasattr(execution, "rows"):
+                rrows = [(r.ticker, r.status, r.gate_reason) for r in execution.rows]
+                dfr = pd.DataFrame(rrows, columns=["ticker", "status", "gate_reason"])
+                dfr["gate_reason"] = dfr["gate_reason"].str.slice(0, 140)
+                reasons_md = dfr.to_markdown(index=False)
+
             agent_md = (
                 f"**As of:** `{decision.as_of}`\n\n"
                 f"**Regime:** `{research.regime.label}` (conf={research.regime.confidence:.2f})\n\n"
@@ -209,7 +218,8 @@ def write_basic_report(results: dict, out_dir: Path, name: str) -> None:
                 f"**Execution JSON:** `{Path(execution_json).as_posix()}`\n\n"
                 f"### Proposed positions\n{dfp.to_markdown(index=False)}\n\n"
                 f"### Risk-gated execution\n{exec_md}\n\n"
-                f"**Gate reason (as_of):** {gate_reason}\n"
+                f"**Gate reason (day-level, as_of):** {gate_reason}\n\n"
+                f"### Per-ticker gate reasons\n{reasons_md}\n"
             )
 
     md = f"""# TradeAgentLab Report: {name}

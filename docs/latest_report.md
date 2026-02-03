@@ -121,7 +121,15 @@
 | QQQ      |       0.25 |   0.25     | accepted |  0      |
 | SPY      |       0.25 |   0.25     | accepted |  0      |
 
-**Gate reason (as_of):** VOL_TARGET: vol_est=10.43%, target=12.00% → raw_scale=1.15, scale=1.00 (CLIPPED)
+**Gate reason (day-level, as_of):** VOL_TARGET: vol_est=10.43%, target=12.00% → raw_scale=1.15, scale=1.00 (CLIPPED)
+
+### Per-ticker gate reasons
+| ticker   | status   | gate_reason                                                                                                                            |
+|:---------|:---------|:---------------------------------------------------------------------------------------------------------------------------------------|
+| MSFT     | accepted | VOL_TARGET: vol_est=10.43%, target=12.00% → raw_scale=1.15, scale=1.00 (CLIPPED)                                                       |
+| NVDA     | accepted | VOL_TARGET: vol_est=10.43%, target=12.00% → raw_scale=1.15, scale=1.00 (CLIPPED) | VOL_CAP_SCALE: vol20D=29.87% > 20.00% → factor=0.67 |
+| QQQ      | accepted | VOL_TARGET: vol_est=10.43%, target=12.00% → raw_scale=1.15, scale=1.00 (CLIPPED)                                                       |
+| SPY      | accepted | VOL_TARGET: vol_est=10.43%, target=12.00% → raw_scale=1.15, scale=1.00 (CLIPPED)                                                       |
 
 
 ## Notes
