@@ -4,6 +4,7 @@ import argparse
 from pathlib import Path
 
 from tradeagentlab.backtest.runner import run_backtest
+from tradeagentlab.paper.run import run_paper
 
 
 def main() -> None:
@@ -13,7 +14,12 @@ def main() -> None:
     p_bt = sub.add_parser("backtest", help="Run a backtest from a YAML config")
     p_bt.add_argument("--config", required=True, type=str)
 
+    p_paper = sub.add_parser("paper", help="Run a paper-trading decision and write daily artifacts")
+    p_paper.add_argument("--config", required=True, type=str)
+
     args = parser.parse_args()
 
     if args.cmd == "backtest":
         run_backtest(Path(args.config))
+    elif args.cmd == "paper":
+        run_paper(Path(args.config))

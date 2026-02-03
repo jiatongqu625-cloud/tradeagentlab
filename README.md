@@ -20,6 +20,9 @@ pip install -e ".[dev]"
 
 # Run a tiny backtest example (will download & cache data)
 tal backtest --config configs/backtest.example.yaml
+
+# Run a paper-trading style daily decision (writes docs/daily/YYYY-MM-DD.md)
+tal paper --config configs/backtest.example.yaml
 ```
 
 ## Repo layout

@@ -1,0 +1,44 @@
+{
+  "as_of": "2025-12-30",
+  "regime": {
+    "label": "risk-on",
+    "confidence": 0.65,
+    "evidence": [
+      "SPY 20D return: 1.29%, vol20D: 8.26%",
+      "Universe mean 20D return: 0.53%, dispersion: 2.49%"
+    ]
+  },
+  "universe": [
+    {
+      "ticker": "AAPL",
+      "ret_20d": -0.03539392198948299,
+      "vol_20d_ann": 0.10541864409760429,
+      "trend": "down"
+    },
+    {
+      "ticker": "MSFT",
+      "ret_20d": 0.0015203615211414334,
+      "vol_20d_ann": 0.1721642897558841,
+      "trend": "flat"
+    },
+    {
+      "ticker": "NVDA",
+      "ret_20d": 0.042410123809844436,
+      "vol_20d_ann": 0.2986624573816226,
+      "trend": "up"
+    },
+    {
+      "ticker": "QQQ",
+      "ret_20d": 0.004954993225862125,
+      "vol_20d_ann": 0.12876964391844475,
+      "trend": "flat"
+    },
+    {
+      "ticker": "SPY",
+      "ret_20d": 0.01289199832228105,
+      "vol_20d_ann": 0.08264280358614189,
+      "trend": "up"
+    }
+  ],
+  "summary": "Broad 20D momentum is positive; regime leaning risk-on."
+}
