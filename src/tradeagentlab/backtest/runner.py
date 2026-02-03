@@ -50,10 +50,14 @@ def run_backtest(config_path: Path) -> None:
     prices = load_prices(cfg.tickers, cfg.start, cfg.end)
     # prices: columns=tickers, index=Date
 
+    # Benchmark (SPY) for comparison in reports
+    bench = load_prices(["SPY"], cfg.start, cfg.end)["SPY"].reindex(prices.index).ffill()
+
     signal = compute_momentum_signal(prices, lookback=cfg.lookback)
-    # naive: daily rebalance to equal-weight long top-half positive momentum
+    # naive: daily rebalance to equal-weight long tickers with positive momentum
 
     rets = prices.pct_change().fillna(0.0)
+    bench_ret = bench.pct_change().fillna(0.0)
 
     # Build weights: equal-weight across tickers with signal==1
     w = signal.div(signal.sum(axis=1).replace(0, pd.NA), axis=0).fillna(0.0)
@@ -66,13 +70,17 @@ def run_backtest(config_path: Path) -> None:
 
     port_ret = (w.shift(1).fillna(0.0) * rets).sum(axis=1) - cost
     equity = (1.0 + port_ret).cumprod() * cfg.initial_cash
+    bench_equity = (1.0 + bench_ret).cumprod() * cfg.initial_cash
 
     results = {
         "config": cfg,
         "prices": prices,
+        "benchmark": bench,
         "weights": w,
         "portfolio_returns": port_ret,
+        "benchmark_returns": bench_ret,
         "equity": equity,
+        "benchmark_equity": bench_equity,
         "turnover": turnover,
         "cost": cost,
     }
