@@ -239,6 +239,39 @@ def write_basic_report(results: dict, out_dir: Path, name: str) -> None:
                 f"### Per-ticker gate reasons\n{reasons_md}\n"
             )
 
+    # Risk events blocks (avoid backslashes inside f-string expressions; Py3.11 compatibility)
+    if risk_audit is not None and "killed" in risk_audit.columns:
+        kill_count = int(risk_audit["killed"].sum())
+        if risk_audit["killed"].any():
+            kill_tbl = (
+                risk_audit.loc[risk_audit["killed"], ["drawdown", "reason"]]
+                .tail(20)
+                .assign(drawdown=lambda d: (d["drawdown"] * 100).round(2))
+                .rename(columns={"drawdown": "drawdown_%"})
+            )
+            kill_block = "### Kill switch days\n" + kill_tbl.to_markdown()
+        else:
+            kill_block = "### Kill switch days\n(none)"
+    else:
+        kill_count = 0
+        kill_block = "### Kill switch days\n(none)"
+
+    if risk_audit is not None and "clipped" in risk_audit.columns:
+        clip_count = int(risk_audit["clipped"].sum())
+        if risk_audit["clipped"].any():
+            clip_tbl = (
+                risk_audit.loc[risk_audit["clipped"], ["vol_est_ann", "scale", "reason"]]
+                .tail(20)
+                .assign(vol_est_ann=lambda d: (d["vol_est_ann"] * 100).round(2))
+                .rename(columns={"vol_est_ann": "vol_est_%"})
+            )
+            clip_block = "### Clipped days\n" + clip_tbl.to_markdown()
+        else:
+            clip_block = "### Clipped days\n(none)"
+    else:
+        clip_count = 0
+        clip_block = "### Clipped days\n(none)"
+
     md = f"""# TradeAgentLab Report: {name}
 
 ## Summary (strategy)
@@ -274,12 +307,12 @@ def write_basic_report(results: dict, out_dir: Path, name: str) -> None:
 {f"![]({scale_hist_path.relative_to(out_dir)})" if scale_hist_path is not None else ''}
 
 ## Risk events timeline
-- Kill switch triggers: **{int(risk_audit["killed"].sum()) if risk_audit is not None and "killed" in risk_audit.columns else 0}** days
-- Scale clipped (raw_scale > max): **{int(risk_audit["clipped"].sum()) if risk_audit is not None and "clipped" in risk_audit.columns else 0}** days
+- Kill switch triggers: **{kill_count}** days
+- Scale clipped (raw_scale > max): **{clip_count}** days
 
-{("### Kill switch days\n" + risk_audit.loc[risk_audit["killed"], ["drawdown", "reason"]].tail(20).assign(drawdown=lambda d: (d["drawdown"]*100).round(2)).rename(columns={"drawdown":"drawdown_%"}).to_markdown()) if risk_audit is not None and "killed" in risk_audit.columns and risk_audit["killed"].any() else "### Kill switch days\n(none)"}
+{kill_block}
 
-{("### Clipped days\n" + risk_audit.loc[risk_audit.get("clipped", False), ["vol_est_ann", "scale", "reason"]].tail(20).assign(vol_est_ann=lambda d: (d["vol_est_ann"]*100).round(2)).rename(columns={"vol_est_ann":"vol_est_%"}).to_markdown()) if risk_audit is not None and "clipped" in risk_audit.columns and risk_audit["clipped"].any() else "### Clipped days\n(none)"}
+{clip_block}
 
 ## Risk audit (last 10 days)
 - `vol_est_ann` and `drawdown` are shown in **%**.
