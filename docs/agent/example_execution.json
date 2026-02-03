@@ -13,9 +13,9 @@
     {
       "ticker": "NVDA",
       "proposed_weight": 0.25,
-      "executed_weight": 0.25,
+      "executed_weight": 0.16741307373665446,
       "status": "accepted",
-      "gate_reason": "VOL_TARGET: vol_est=10.43%, target=12.00% → raw_scale=1.15, scale=1.00 (CLIPPED)"
+      "gate_reason": "VOL_TARGET: vol_est=10.43%, target=12.00% → raw_scale=1.15, scale=1.00 (CLIPPED) | VOL_CAP_SCALE: vol20D=29.87% > 20.00% → factor=0.67"
     },
     {
       "ticker": "QQQ",

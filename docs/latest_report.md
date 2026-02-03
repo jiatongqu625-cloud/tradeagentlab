@@ -116,10 +116,10 @@
 ### Risk-gated execution
 | ticker   |   proposed |   executed | status   |   delta |
 |:---------|-----------:|-----------:|:---------|--------:|
-| MSFT     |       0.25 |       0.25 | accepted |       0 |
-| NVDA     |       0.25 |       0.25 | accepted |       0 |
-| QQQ      |       0.25 |       0.25 | accepted |       0 |
-| SPY      |       0.25 |       0.25 | accepted |       0 |
+| MSFT     |       0.25 |   0.25     | accepted |  0      |
+| NVDA     |       0.25 |   0.167413 | accepted | -0.0826 |
+| QQQ      |       0.25 |   0.25     | accepted |  0      |
+| SPY      |       0.25 |   0.25     | accepted |  0      |
 
 **Gate reason (as_of):** VOL_TARGET: vol_est=10.43%, target=12.00% → raw_scale=1.15, scale=1.00 (CLIPPED)
 

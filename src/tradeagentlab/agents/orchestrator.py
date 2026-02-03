@@ -16,6 +16,8 @@ def run_agent_decision(
     risk_audit: pd.DataFrame | None,
     out_dir: Path,
     name: str,
+    max_ticker_vol_ann: float = 0.35,
+    vol_cap_mode: str = "scale",
 ) -> dict:
     """Generate a research note + structured decision + risk-gated execution plan and save artifacts."""
     out_dir.mkdir(parents=True, exist_ok=True)
@@ -28,7 +30,14 @@ def run_agent_decision(
 
     # Build a risk-gated execution plan using the risk overlay scale
     proposed = pd.Series({p.ticker: p.weight for p in decision.proposed_positions})
-    execution = build_execution_plan(as_of=decision.as_of, proposed=proposed, risk_audit=risk_audit)
+    execution = build_execution_plan(
+        as_of=decision.as_of,
+        proposed=proposed,
+        risk_audit=risk_audit,
+        research=research,
+        max_ticker_vol_ann=max_ticker_vol_ann,
+        vol_cap_mode=vol_cap_mode,
+    )
 
     research_path = agent_dir / f"{name}_research.json"
     decision_path = agent_dir / f"{name}_decision.json"

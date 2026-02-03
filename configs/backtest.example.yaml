@@ -20,6 +20,10 @@ risk:
   dd_kill: 0.35
   max_leverage: 1.0
 
+agent:
+  max_ticker_vol_ann: 0.20
+  vol_cap_mode: "scale"  # scale|reject
+
 report:
   out_dir: "docs"
   name: "example"

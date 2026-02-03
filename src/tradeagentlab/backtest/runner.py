@@ -23,6 +23,7 @@ class BacktestConfig:
     max_position_weight: float
     transaction_cost_bps: float
     risk: RiskConfig
+    agent: dict
     report_out_dir: str
     report_name: str
 
@@ -33,6 +34,7 @@ def _read_config(path: Path) -> BacktestConfig:
     s = obj["strategy"]
     p = obj["portfolio"]
     rk = obj.get("risk", {})
+    agent = obj.get("agent", {})
     r = obj.get("report", {})
 
     risk = RiskConfig(
@@ -52,6 +54,7 @@ def _read_config(path: Path) -> BacktestConfig:
         max_position_weight=float(p["max_position_weight"]),
         transaction_cost_bps=float(p.get("transaction_cost_bps", 0.0)),
         risk=risk,
+        agent=dict(agent),
         report_out_dir=str(r.get("out_dir", "docs")),
         report_name=str(r.get("name", "run")),
     )
@@ -99,6 +102,8 @@ def run_backtest(config_path: Path) -> None:
         risk_audit=audit,
         out_dir=Path(cfg.report_out_dir),
         name=cfg.report_name,
+        max_ticker_vol_ann=float(cfg.agent.get("max_ticker_vol_ann", 0.35)),
+        vol_cap_mode=str(cfg.agent.get("vol_cap_mode", "scale")),
     )
 
     results = {
