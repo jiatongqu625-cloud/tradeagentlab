@@ -23,6 +23,9 @@
 ## Rolling risk metrics
 ![](figures/example_rolling_vol.png)
 
+## Exposure & cash over time
+![](figures/example_exposure_cash.png)
+
 ## Risk overlay (exposure scale)
 - Last scale: **1.00**
 - Days killed (scale=0 due to DD): **0**

@@ -134,6 +134,16 @@ def write_basic_report(results: dict, out_dir: Path, name: str) -> None:
     vol_path = fig_dir / f"{name}_rolling_vol.png"
     fig_v.write_image(vol_path, scale=2)
 
+    # Exposure (invested weight) and cash weight over time
+    exposure = weights.sum(axis=1).clip(lower=0.0)
+    cash = (1.0 - exposure).clip(lower=0.0)
+    fig_e = go.Figure()
+    fig_e.add_trace(go.Scatter(x=exposure.index, y=exposure.values, name="Gross exposure"))
+    fig_e.add_trace(go.Scatter(x=cash.index, y=cash.values, name="Cash weight"))
+    fig_e.update_layout(title="Exposure & Cash over time", xaxis_title="Date", yaxis_title="Weight")
+    exposure_path = fig_dir / f"{name}_exposure_cash.png"
+    fig_e.write_image(exposure_path, scale=2)
+
     if risk_audit is not None and "scale" in risk_audit.columns:
         # Exposure scale time series
         fig_s = go.Figure()
@@ -251,6 +261,9 @@ def write_basic_report(results: dict, out_dir: Path, name: str) -> None:
 
 ## Rolling risk metrics
 ![]({vol_path.relative_to(out_dir)})
+
+## Exposure & cash over time
+![]({exposure_path.relative_to(out_dir)})
 
 ## Risk overlay (exposure scale)
 {risk_summary}
