@@ -105,16 +105,47 @@ def write_basic_report(results: dict, out_dir: Path, name: str) -> None:
     tc_path = fig_dir / f"{name}_turnover_cost.png"
     fig_tc.write_image(tc_path, scale=2)
 
-    # 4) Risk exposure (scale)
+    # 4) Rolling risk metrics (vol) + risk overlay (scale)
+    vol_path = None
     scale_path = None
+    scale_hist_path = None
     risk_summary = "(risk audit not available)"
     audit_md = "(no audit)"
+
+    # Rolling vol (20d, annualized) strategy vs SPY
+    vol_window = 20
+    strat_vol = rets.rolling(vol_window, min_periods=vol_window).std(ddof=0) * np.sqrt(252)
+    if bench_rets is not None:
+        bench_vol = bench_rets.rolling(vol_window, min_periods=vol_window).std(ddof=0) * np.sqrt(252)
+    else:
+        bench_vol = None
+
+    fig_v = go.Figure()
+    fig_v.add_trace(go.Scatter(x=strat_vol.index, y=strat_vol.values, name=f"Strategy {vol_window}D vol"))
+    if bench_vol is not None:
+        fig_v.add_trace(go.Scatter(x=bench_vol.index, y=bench_vol.values, name=f"SPY {vol_window}D vol"))
+    fig_v.update_layout(
+        title=f"Rolling volatility ({vol_window}D, annualized)",
+        xaxis_title="Date",
+        yaxis_title="Vol",
+    )
+    vol_path = fig_dir / f"{name}_rolling_vol.png"
+    fig_v.write_image(vol_path, scale=2)
+
     if risk_audit is not None and "scale" in risk_audit.columns:
+        # Exposure scale time series
         fig_s = go.Figure()
         fig_s.add_trace(go.Scatter(x=risk_audit.index, y=risk_audit["scale"].values, name="Exposure scale"))
         fig_s.update_layout(title="Risk overlay: exposure scaling", xaxis_title="Date", yaxis_title="Scale")
         scale_path = fig_dir / f"{name}_risk_scale.png"
         fig_s.write_image(scale_path, scale=2)
+
+        # Exposure scale distribution
+        fig_h = go.Figure()
+        fig_h.add_trace(go.Histogram(x=risk_audit["scale"].values, nbinsx=30, name="scale"))
+        fig_h.update_layout(title="Exposure scale distribution", xaxis_title="Scale", yaxis_title="Count")
+        scale_hist_path = fig_dir / f"{name}_risk_scale_hist.png"
+        fig_h.write_image(scale_hist_path, scale=2)
 
         last_scale = float(risk_audit["scale"].iloc[-1])
         killed_days = int(risk_audit.get("killed", pd.Series(False, index=risk_audit.index)).sum())
@@ -164,10 +195,16 @@ def write_basic_report(results: dict, out_dir: Path, name: str) -> None:
 ## Turnover & transaction costs
 ![]({tc_path.relative_to(out_dir)})
 
+## Rolling risk metrics
+![]({vol_path.relative_to(out_dir)})
+
 ## Risk overlay (exposure scale)
 {risk_summary}
 
 {f"![]({scale_path.relative_to(out_dir)})" if scale_path is not None else ''}
+
+### Exposure scale distribution
+{f"![]({scale_hist_path.relative_to(out_dir)})" if scale_hist_path is not None else ''}
 
 ## Risk events timeline
 - Kill switch triggers: **{int(risk_audit["killed"].sum()) if risk_audit is not None and "killed" in risk_audit.columns else 0}** days

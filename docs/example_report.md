@@ -20,11 +20,17 @@
 ## Turnover & transaction costs
 ![](figures/example_turnover_cost.png)
 
+## Rolling risk metrics
+![](figures/example_rolling_vol.png)
+
 ## Risk overlay (exposure scale)
 - Last scale: **1.00**
 - Days killed (scale=0 due to DD): **0**
 
 ![](figures/example_risk_scale.png)
+
+### Exposure scale distribution
+![](figures/example_risk_scale_hist.png)
 
 ## Risk events timeline
 - Kill switch triggers: **0** days
