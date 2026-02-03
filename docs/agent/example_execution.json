@@ -31,5 +31,7 @@
       "status": "accepted",
       "gate_reason": "VOL_TARGET: vol_est=10.43%, target=12.00% → raw_scale=1.15, scale=1.00 (CLIPPED)"
     }
-  ]
+  ],
+  "cash_weight": 0.08258692626334552,
+  "gross_exposure": 0.9174130737366545
 }

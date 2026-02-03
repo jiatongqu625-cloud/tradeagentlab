@@ -69,9 +69,14 @@ def build_execution_plan(
             )
         )
 
+    gross_exposure = float(sum(r.executed_weight for r in rows))
+    cash_weight = float(max(0.0, 1.0 - gross_exposure))
+
     return ExecutionPlan(
         as_of=as_of,
         scale=scale,
         gate_reason=reason,
         rows=rows,
+        cash_weight=cash_weight,
+        gross_exposure=gross_exposure,
     )

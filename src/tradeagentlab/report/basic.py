@@ -202,6 +202,8 @@ def write_basic_report(results: dict, out_dir: Path, name: str) -> None:
                 exec_md = dfx.to_markdown(index=False)
 
             gate_reason = getattr(execution, "gate_reason", "") if execution is not None else ""
+            cash_w = getattr(execution, "cash_weight", None) if execution is not None else None
+            gross = getattr(execution, "gross_exposure", None) if execution is not None else None
 
             # Per-ticker gate reasons (trim to keep report readable)
             reasons_md = "(no per-ticker reasons)"
@@ -211,12 +213,17 @@ def write_basic_report(results: dict, out_dir: Path, name: str) -> None:
                 dfr["gate_reason"] = dfr["gate_reason"].str.slice(0, 140)
                 reasons_md = dfr.to_markdown(index=False)
 
+            exec_summary = ""
+            if cash_w is not None and gross is not None:
+                exec_summary = f"**Executed gross exposure:** {float(gross):.2%}  |  **Cash weight:** {float(cash_w):.2%}\n\n"
+
             agent_md = (
                 f"**As of:** `{decision.as_of}`\n\n"
                 f"**Regime:** `{research.regime.label}` (conf={research.regime.confidence:.2f})\n\n"
                 f"**Decision JSON:** `{Path(decision_json).as_posix()}`\n"
                 f"**Execution JSON:** `{Path(execution_json).as_posix()}`\n\n"
-                f"### Proposed positions\n{dfp.to_markdown(index=False)}\n\n"
+                + exec_summary
+                + f"### Proposed positions\n{dfp.to_markdown(index=False)}\n\n"
                 f"### Risk-gated execution\n{exec_md}\n\n"
                 f"**Gate reason (day-level, as_of):** {gate_reason}\n\n"
                 f"### Per-ticker gate reasons\n{reasons_md}\n"

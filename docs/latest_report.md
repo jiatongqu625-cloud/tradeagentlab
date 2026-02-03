@@ -105,6 +105,8 @@
 **Decision JSON:** `docs/agent/example_decision.json`
 **Execution JSON:** `docs/agent/example_execution.json`
 
+**Executed gross exposure:** 91.74%  |  **Cash weight:** 8.26%
+
 ### Proposed positions
 | ticker   |   proposed | reason                                    |
 |:---------|-----------:|:------------------------------------------|

@@ -53,3 +53,5 @@ class ExecutionPlan(BaseModel):
     scale: float
     gate_reason: str
     rows: list[ExecutionRow]
+    cash_weight: float
+    gross_exposure: float
