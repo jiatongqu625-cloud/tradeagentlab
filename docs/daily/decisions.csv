@@ -2,3 +2,4 @@ date,as_of,regime,gross_exposure,cash_weight,gate_reason
 2026-02-03,2025-12-30,risk-on,0.917413,0.082587,"VOL_TARGET: vol_est=10.43%, target=12.00% → raw_scale=1.15, scale=1.00 (CLIPPED)"
 2026-02-03,2025-12-30,risk-on,0.917413,0.082587,"VOL_TARGET: vol_est=10.43%, target=12.00% → raw_scale=1.15, scale=1.00 (CLIPPED)"
 2026-02-04,2025-12-30,risk-on,0.917413,0.082587,"VOL_TARGET: vol_est=10.43%, target=12.00% → raw_scale=1.15, scale=1.00 (CLIPPED)"
+2026-02-05,2025-12-30,risk-on,0.917413,0.082587,"VOL_TARGET: vol_est=10.43%, target=12.00% → raw_scale=1.15, scale=1.00 (CLIPPED)"
