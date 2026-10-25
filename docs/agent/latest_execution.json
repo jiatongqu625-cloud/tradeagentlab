@@ -13,7 +13,7 @@
     {
       "ticker": "NVDA",
       "proposed_weight": 0.25,
-      "executed_weight": 0.16741283525806344,
+      "executed_weight": 0.16741301450012633,
       "status": "accepted",
       "gate_reason": "VOL_TARGET: vol_est=10.43%, target=12.00% → raw_scale=1.15, scale=1.00 (CLIPPED) | VOL_CAP_SCALE: vol20D=29.87% > 20.00% → factor=0.67"
     },
@@ -32,6 +32,6 @@
       "gate_reason": "VOL_TARGET: vol_est=10.43%, target=12.00% → raw_scale=1.15, scale=1.00 (CLIPPED)"
     }
   ],
-  "cash_weight": 0.0825871647419365,
-  "gross_exposure": 0.9174128352580635
+  "cash_weight": 0.08258698549987364,
+  "gross_exposure": 0.9174130145001264
 }
